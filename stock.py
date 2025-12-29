@@ -4,13 +4,13 @@ import pandas as pd
 
 st.title("Portfolio Tracker")
 
-# TODO: maybe fetch these dynamically later
+# exchange price
 USD_TO_GBP = 0.79
 EUR_TO_GBP = 0.86
 
 st.subheader("My Holdings")
 
-# just use a simple table, users can add rows with the + button
+
 default_stocks = pd.DataFrame({
     "Ticker": ["AAPL", "MSFT", "SHEL.L"],
     "Shares": [10.0, 5.0, 20.0],
@@ -33,10 +33,8 @@ if not tickers:
     st.info("Add some stocks!")
     st.stop()
 
-# download everything in one go
 data = yf.download(tickers, period="1mo", progress=False)
 
-# yfinance returns different format for 1 ticker vs many, annoying
 if len(tickers) == 1:
     closes = data["Close"].to_frame(tickers[0])
 else:
@@ -53,11 +51,11 @@ for _, row in portfolio.iterrows():
     
     price = closes[ticker].dropna().iloc[-1]
     
-    # uk stocks are in pence for some reason
+   
     if ticker.endswith(".L"):
         price = price / 100
     
-    # convert usd to gbp (most of my stocks are us anyway)
+    # convert usd to gbp
     if not ticker.endswith(".L"):
         price = price * USD_TO_GBP
     
@@ -90,7 +88,7 @@ col2.metric("P/L", f"£{total_gain:+,.0f}")
 
 st.divider()
 
-# format nicely
+# formatting
 display = df.copy()
 display["price"] = display["price"].apply(lambda x: f"£{x:.2f}")
 display["value"] = display["value"].apply(lambda x: f"£{x:,.0f}")
